@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualización de datos</title>
+    <title>Stats COVID-19</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>el titulo</h1>
+    <h3>Seleccione el país</h3>
+    <select id="slc" name="select">
+        <!-- <option value="value1">País 1</option> 
+        <option value="value2" selected>País 2</option>
+        <option value="value3">País 3</option> -->
+      </select>
     <canvas id="myChart" width="800" height="400"></canvas>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
@@ -16,7 +22,6 @@
 
         console.log('despues');
     </script> -->
-
     <script type="module" src="script.js"></script>
 </body>
 </html>
