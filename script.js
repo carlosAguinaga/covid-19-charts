@@ -1,16 +1,31 @@
 import {countries} from './countries.js'
-import {getTotalCasesByDate} from "./utils.js";
+import {getTotalCasesByDate} from "./utils.js"
 
+var cargando = true
 
 let select = document.getElementById('slc')
 let slugCoutry = 'peru'
 let chart
+let ctx = document.querySelector("#myChart").getContext("2d");
+var i = 0;
+
+// ordenar los objetos alfabeticamente por su propidead Country
+countries.sort((a,b)=>{
+  if (a.country < b.country) {
+    return -1
+  }
+  if (a.country > b.country) {
+    return 1
+  }
+  return 0
+})
+
 
 // add to select input
-for (const country of countries) {
+for (const country_item of countries) {
   let option = document.createElement('option')
-  option.value = `v_${country.Country}`
-  option.innerHTML = country.Country
+  option.value = `v_${country_item.country}`
+  option.innerHTML = country_item.country
   select.appendChild(option)
 }
 select[173].selected = true // Perú  mejorar esta linea
@@ -18,22 +33,28 @@ select[173].selected = true // Perú  mejorar esta linea
 
 select.addEventListener('change', () => {
   const optionSelected = select.options[select.selectedIndex].text;
-  const country = countries.find((country) => optionSelected == country.Country)
+  const country = countries.find((country) => optionSelected == country.country)
   if(chart != undefined ){
     chart.destroy()
   }
-  // mostrar loader
-  renderChartsCountry(country.Slug);
+  renderChartsCountry(country.slug);
 })
-// mostrar loader
+
 renderChartsCountry(slugCoutry);
 
 
 async function renderChartsCountry(slugCoutry) {
-  const ctx = document.querySelector("#myChart").getContext("2d");
+  cargando = true
+  spinner()
   const data = await getTotalCasesByDate(slugCoutry)
-  //quitar loader
-  totalCaseCharts(data, ctx);
+  cargando = false
+  ctx = null
+  ctx = document.querySelector("#myChart").getContext("2d");
+  // //quitar loader
+    // context.clearRect(0, 0, canvas.width, canvas.height);
+    totalCaseCharts(data, ctx);
+
+  
 }
 
 
@@ -68,6 +89,7 @@ function totalCaseCharts(data, ctx) {
       ]
     },
     options: {
+      maintainAspectRatio: false,
       scales: {
         xAxes: [
           {
@@ -130,4 +152,33 @@ function totalCaseCharts(data, ctx) {
 
 
 
+function spinner() {
 
+
+  console.log(i)
+  console.log(cargando)
+  i += 0.07;
+
+  ctx.translate(50, 50);
+  ctx.rotate(0.0);
+  ctx.translate(-50, -50);
+  ctx.clearRect(0, 0, 100, 100);
+
+  ctx.beginPath();
+  ctx.arc(50, 50, 30, i - Math.cos(i + 90), i + Math.sin(i + 180) + 2.3);
+  ctx.lineWidth = 8;
+  var gradient = ctx.createLinearGradient(0, 0, 170, 0);
+  gradient.addColorStop("0", "#1cd44d");
+  gradient.addColorStop("0.5", "#ff4e3b");
+  ctx.strokeStyle = gradient;
+  ctx.lineCap = "round";
+  ctx.stroke();
+
+  if (cargando) {
+    window.requestAnimationFrame(spinner);
+  }else{
+    window.requestAnimationFrame()
+    ctx.clearRect(200, 0, canvas.width, canvas.height)
+  }
+
+}
