@@ -8,7 +8,9 @@
     margin: auto;
     width: 80vw;
     height: 80vh;
-
+}
+.fatalidad{
+  text-align: center;
 }
 .canvas{
     /* border: 1px dotted red; */

@@ -1,92 +1,95 @@
-import {countries} from './countries.js'
-import {getTotalCasesByDate} from "./utils.js"
+import { countries } from "./countries.js";
+import { getTotalCasesByDate } from "./utils.js";
 
-var cargando = true
+moment.locale("es");
+var cargando = true;
 
-let select = document.getElementById('slc')
-let slugCoutry = 'peru'
-let chart
+let select = document.getElementById("slc");
+let slugCoutry = "peru";
+let chart;
 let ctx = document.querySelector("#myChart").getContext("2d");
+let PorcentajeMuertes = document.querySelector("#muertes");
 var i = 0;
 
 // ordenar los objetos alfabeticamente por su propidead Country
-countries.sort((a,b)=>{
+countries.sort((a, b) => {
   if (a.country < b.country) {
-    return -1
+    return -1;
   }
   if (a.country > b.country) {
-    return 1
+    return 1;
   }
-  return 0
-})
-
+  return 0;
+});
 
 // add to select input
 for (const country_item of countries) {
-  let option = document.createElement('option')
-  option.value = `v_${country_item.country}`
-  option.innerHTML = country_item.country
-  select.appendChild(option)
+  let option = document.createElement("option");
+  option.value = `v_${country_item.country}`;
+  option.innerHTML = country_item.country;
+  select.appendChild(option);
 }
-select[173].selected = true // Perú  mejorar esta linea
+select[173].selected = true; // Perú  mejorar esta linea
 
-
-select.addEventListener('change', () => {
+select.addEventListener("change", () => {
   const optionSelected = select.options[select.selectedIndex].text;
-  const country = countries.find((country) => optionSelected == country.country)
-  if(chart != undefined ){
-    chart.destroy()
+  const country = countries.find(
+    (country) => optionSelected == country.country
+  );
+  if (chart != undefined) {
+    chart.destroy();
   }
   renderChartsCountry(country.slug);
-})
+});
 
 renderChartsCountry(slugCoutry);
 
-
 async function renderChartsCountry(slugCoutry) {
-  cargando = true
-  spinner()
-  const data = await getTotalCasesByDate(slugCoutry)
-  cargando = false
-  ctx = null
+  cargando = true;
+  PorcentajeMuertes.innerHTML = "";
+  spinner();
+  const data = await getTotalCasesByDate(slugCoutry);
+  cargando = false;
+  ctx = null;
   ctx = document.querySelector("#myChart").getContext("2d");
-  // //quitar loader
-    // context.clearRect(0, 0, canvas.width, canvas.height);
-    totalCaseCharts(data, ctx);
-
-  
+  totalCaseCharts(data, ctx);
+  const { confirmed, deaths } = data;
+  let confirmados = confirmed[confirmed.length - 1].Cases;
+  let fallecidos = deaths[deaths.length - 1].Cases;
+  PorcentajeMuertes.innerHTML = `tasa de muertes: % ${(
+    (fallecidos / confirmados) *
+    100
+  ).toFixed(2)}`;
 }
-
 
 function totalCaseCharts(data, ctx) {
   const { confirmed, deaths, recovered } = data;
 
-  
   chart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: confirmed.map(item =>
+      labels: confirmed.map((item) =>
         Intl.DateTimeFormat("es-PE", { month: "long", day: "numeric" }).format(
-          new Date(item.Date)
-        ),
+          new Date(item.Date).setHours(24)
+        )
       ),
       datasets: [
         {
           label: "Muertes",
           borderColor: "red",
-          data: deaths.map(item => item.Cases),
+          data: deaths.map((item) => item.Cases),
         },
         {
           label: "Recuperados",
           borderColor: "green",
-          data: recovered.map(item => item.Cases)
+          data: recovered.map((item) => item.Cases),
         },
         {
           label: "Confirmados",
           borderColor: "orange",
-          data: confirmed.map(item => item.Cases)
-        }
-      ]
+          data: confirmed.map((item) => item.Cases),
+        },
+      ],
     },
     options: {
       maintainAspectRatio: false,
@@ -95,17 +98,18 @@ function totalCaseCharts(data, ctx) {
           {
             gridLines: false,
             ticks: {
-                padding: 15
-            }
-          },   
-        ]
+              padding: 15,
+            },
+          },
+        ],
       },
       title: {
         display: true,
         text: "Todos los casos dede el primer reporte covid-19",
         fontSize: 30,
         padding: 30,
-        fontColor: "#12619c"
+        fontColor: "#12619c",
+        // position: "bottom",
       },
       legend: {
         position: "bottom",
@@ -114,14 +118,15 @@ function totalCaseCharts(data, ctx) {
           boxWidth: 15,
           fontSize: 15,
           fontFamily: "system-iu",
-          fontColor: "black"
-        }
+          fontColor: "black",
+        },
       },
       layout: {
         padding: {
           right: 50,
-          bottom: 50,
-        }
+          left: 25,
+          bottom: 5,
+        },
       },
       tooltips: {
         backgroundColor: "#0584f6",
@@ -135,28 +140,23 @@ function totalCaseCharts(data, ctx) {
       elements: {
         line: {
           borderWidth: 8,
-          fill: false
+          fill: false,
         },
         point: {
           radius: 6,
           borderWidth: 4,
           backgroundColor: "white",
           hoverRadius: 8,
-          hoverBorderWidth: 4
-        }
-      }
-    }
-  })
+          hoverBorderWidth: 4,
+        },
+      },
+    },
+  });
 }
 
-
-
-
 function spinner() {
-
-
-  console.log(i)
-  console.log(cargando)
+  console.log(i);
+  console.log(cargando);
   i += 0.07;
 
   ctx.translate(50, 50);
@@ -176,9 +176,6 @@ function spinner() {
 
   if (cargando) {
     window.requestAnimationFrame(spinner);
-  }else{
-    window.requestAnimationFrame()
-    ctx.clearRect(200, 0, canvas.width, canvas.height)
-  }
-
+  } 
+  
 }

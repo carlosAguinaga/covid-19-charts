@@ -9,14 +9,18 @@
   </head>
   <body>
     <head>
+      <nav class="navbar navbar-light bg-light">
         <h2>Seleccione el país</h2>
         <select id="slc" name="select" class="select-country custom-select"></select>
+      </nav>
     </head>
     <div class="contenedor">
       <canvas id="myChart" width="400" height="200" class="canvas"></canvas>
+      <p id="muertes" class="fatalidad"></p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <script type="module" src="script.js"></script>
   </body>
 </html>
