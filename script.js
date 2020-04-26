@@ -1,7 +1,6 @@
 import { countries } from "./countries.js";
 import { getTotalCasesByDate } from "./utils.js";
 
-moment.locale("es");
 var cargando = true;
 
 let select = document.getElementById("slc");
@@ -53,6 +52,7 @@ async function renderChartsCountry(slugCoutry) {
   ctx = null;
   ctx = document.querySelector("#myChart").getContext("2d");
   totalCaseCharts(data, ctx);
+  //agraga la tasa de fallecidos
   const { confirmed, deaths } = data;
   let confirmados = confirmed[confirmed.length - 1].Cases;
   let fallecidos = deaths[deaths.length - 1].Cases;
@@ -61,6 +61,7 @@ async function renderChartsCountry(slugCoutry) {
     100
   ).toFixed(2)}`;
 }
+
 
 function totalCaseCharts(data, ctx) {
   const { confirmed, deaths, recovered } = data;
@@ -105,7 +106,7 @@ function totalCaseCharts(data, ctx) {
       },
       title: {
         display: true,
-        text: "Todos los casos dede el primer reporte covid-19",
+        text: "Todos los casos del covid-19",
         fontSize: 30,
         padding: 30,
         fontColor: "#12619c",
@@ -117,14 +118,14 @@ function totalCaseCharts(data, ctx) {
           padding: 20,
           boxWidth: 15,
           fontSize: 15,
-          fontFamily: "system-iu",
+          fontFamily: "Helvetica Neue",
           fontColor: "black",
         },
       },
       layout: {
         padding: {
-          right: 50,
-          left: 25,
+          right: 4,
+          left: 4,
           bottom: 5,
         },
       },
@@ -139,24 +140,29 @@ function totalCaseCharts(data, ctx) {
       },
       elements: {
         line: {
-          borderWidth: 8,
+          borderWidth: 2,
           fill: false,
         },
         point: {
-          radius: 6,
-          borderWidth: 4,
+          radius: 2,
+          borderWidth: 2,
           backgroundColor: "white",
-          hoverRadius: 8,
-          hoverBorderWidth: 4,
+          hoverRadius: 4,
+          hoverBorderWidth: 2,
         },
       },
     },
   });
+  
+
 }
 
+
+
+
 function spinner() {
-  console.log(i);
-  console.log(cargando);
+  // console.log(i);
+  // console.log(cargando);
   i += 0.07;
 
   ctx.translate(50, 50);
@@ -177,5 +183,6 @@ function spinner() {
   if (cargando) {
     window.requestAnimationFrame(spinner);
   } 
-  
 }
+
+
