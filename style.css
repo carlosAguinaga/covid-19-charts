@@ -1,9 +1,11 @@
+h3{
+  margin-right: 15px;
+}
 .select-country {
   max-width: 400px;
-  margin-bottom: 20px;
+  margin: auto 0px;
 }
 .contenedor {
-  border: 3px dotted blue;
   position: relative;
   margin: auto;
   width: 100vw;
@@ -18,6 +20,4 @@
 .fatalidad {
   text-align: center;
 }
-.canvas {
-  /* border: 1px dotted red; */
-}
+

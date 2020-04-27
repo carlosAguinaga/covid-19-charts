@@ -2,13 +2,12 @@ import { countries } from "./countries.js";
 import { getTotalCasesByDate } from "./utils.js";
 
 var cargando = true;
-
 let select = document.getElementById("slc");
-let slugCoutry = "peru";
-let chart;
 let ctx = document.querySelector("#myChart").getContext("2d");
 let PorcentajeMuertes = document.querySelector("#muertes");
-var i = 0;
+let chart;
+let slugCoutry = "peru";
+var progressSpinner = 0;
 
 // ordenar los objetos alfabeticamente por su propidead Country
 countries.sort((a, b) => {
@@ -21,20 +20,18 @@ countries.sort((a, b) => {
   return 0;
 });
 
-// add to select input
+// add to select
 for (const country_item of countries) {
   let option = document.createElement("option");
   option.value = `v_${country_item.country}`;
   option.innerHTML = country_item.country;
   select.appendChild(option);
 }
-select[173].selected = true; // Perú  mejorar esta linea
+select[173].selected = true; // Perú
 
 select.addEventListener("change", () => {
   const optionSelected = select.options[select.selectedIndex].text;
-  const country = countries.find(
-    (country) => optionSelected == country.country
-  );
+  const country = countries.find((country) => optionSelected == country.country);
   if (chart != undefined) {
     chart.destroy();
   }
@@ -53,15 +50,8 @@ async function renderChartsCountry(slugCoutry) {
   ctx = document.querySelector("#myChart").getContext("2d");
   totalCaseCharts(data, ctx);
   //agraga la tasa de fallecidos
-  const { confirmed, deaths } = data;
-  let confirmados = confirmed[confirmed.length - 1].Cases;
-  let fallecidos = deaths[deaths.length - 1].Cases;
-  PorcentajeMuertes.innerHTML = `tasa de muertes: % ${(
-    (fallecidos / confirmados) *
-    100
-  ).toFixed(2)}`;
+  tasaDeMuertes(data);
 }
-
 
 function totalCaseCharts(data, ctx) {
   const { confirmed, deaths, recovered } = data;
@@ -124,7 +114,7 @@ function totalCaseCharts(data, ctx) {
       },
       layout: {
         padding: {
-          right: 4,
+          right: 15,
           left: 4,
           bottom: 5,
         },
@@ -144,7 +134,7 @@ function totalCaseCharts(data, ctx) {
           fill: false,
         },
         point: {
-          radius: 2,
+          radius: 3,
           borderWidth: 2,
           backgroundColor: "white",
           hoverRadius: 4,
@@ -153,17 +143,10 @@ function totalCaseCharts(data, ctx) {
       },
     },
   });
-  
-
 }
 
-
-
-
 function spinner() {
-  // console.log(i);
-  // console.log(cargando);
-  i += 0.07;
+  progressSpinner += 0.07;
 
   ctx.translate(50, 50);
   ctx.rotate(0.0);
@@ -171,7 +154,13 @@ function spinner() {
   ctx.clearRect(0, 0, 100, 100);
 
   ctx.beginPath();
-  ctx.arc(50, 50, 30, i - Math.cos(i + 90), i + Math.sin(i + 180) + 2.3);
+  ctx.arc(
+    50,
+    50,
+    30,
+    progressSpinner - Math.cos(progressSpinner + 90),
+    progressSpinner + Math.sin(progressSpinner + 180) + 2.3
+  );
   ctx.lineWidth = 8;
   var gradient = ctx.createLinearGradient(0, 0, 170, 0);
   gradient.addColorStop("0", "#1cd44d");
@@ -182,7 +171,15 @@ function spinner() {
 
   if (cargando) {
     window.requestAnimationFrame(spinner);
-  } 
+  }
 }
 
-
+function tasaDeMuertes(data) {
+  const { confirmed, deaths } = data;
+  let confirmados = confirmed[confirmed.length - 1].Cases;
+  let fallecidos = deaths[deaths.length - 1].Cases;
+  PorcentajeMuertes.innerHTML = `Letalidad: % ${(
+    (fallecidos / confirmados) *
+    100
+  ).toFixed(2)}`;
+}
